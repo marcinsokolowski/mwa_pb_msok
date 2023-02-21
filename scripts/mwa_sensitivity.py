@@ -98,7 +98,8 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
                           zenithnorm=True,
                           antnum=128,
                           inttime=120,
-                          bandwidth=1280000):
+                          bandwidth=1280000,
+                          incoherent=False):
     freq_mhz = freq / 1e6
     print('frequency=%.2f -> delays=%s' % (freq, delays))
 
@@ -147,8 +148,12 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
     if antnum == 1 :
        antnum_minus1 = 1
 
-    noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
-    noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
+    if incoherent :
+       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum )
+       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum )    
+    else :
+       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
+       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
 
     print("%.2f Hz :" % (freq))
 
@@ -221,6 +226,11 @@ def main():
     parser.add_option('--pointing_dec_deg', '--dec', dest='pointing_dec_deg', default=None, help='Pointing DEC [deg]', type=float)
     parser.add_option('-r', '--t_rcv', dest='t_rcv', default=0, help='Receiver noise temperature', type=float)
     parser.add_option('--gridpoint', dest='gridpoint', default=-1, help='Gridpoint number', type=int)
+    
+    # different options of summation (default interferometry):
+    # incoherent sum on N antennas :
+    parser.add_option('--incoherent', '--ic', action="store_true", dest="incoherent", default=False, help="Sensitivity of incoherent sum [default %default]")
+    
 
     # types :
     #   trcv_angelica_data_vs_time : Use T_rcv from lightcurve fits see RED curve in Ill.25 haslam_vs_angelica.odt for details
@@ -388,6 +398,7 @@ def main():
     print("gridpoint  = %d" % (options.gridpoint))
     print("use db     = %s" % (options.use_db))
     print("T_rcv type = %s" % (options.trcv_type))
+    print("Incoherent sum = %s" % (options.incoherent))
     print("########################################")
 
     #    if (datetimestring is None):
@@ -485,7 +496,8 @@ def main():
                                               zenithnorm=options.zenithnorm,
                                               antnum=options.antnum,
                                               inttime=options.inttime,
-                                              bandwidth=options.bandwidth)
+                                              bandwidth=options.bandwidth,
+                                              incoherent=options.incoherent )
 
            out_line_XX = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_XX, T_sys_XX, aeff_XX, T_rcv, noise_XX)
            out_line_YY = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_YY, T_sys_YY, aeff_YY, T_rcv, noise_YY)
