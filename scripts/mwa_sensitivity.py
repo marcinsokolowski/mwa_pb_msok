@@ -99,9 +99,13 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
                           antnum=128,
                           inttime=120,
                           bandwidth=1280000,
-                          incoherent=False):
+                          incoherent=False,
+                          n_phase_bins=1,
+                          pulsar_observing_time=-1 ):
     freq_mhz = freq / 1e6
-    print('frequency=%.2f -> delays=%s' % (freq, delays))
+    if pulsar_observing_time <= 0 :
+       pulsar_observing_time = inttime
+    print('pulsar_observing_time = %.2f [sec], frequency=%.2f -> delays=%s' % (pulsar_observing_time,freq, delays))
 
     # if trcv_type',default='trcv_from_skymodel_with_err
 #    if trcv_type != "value":
@@ -176,6 +180,17 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
     print("Noise expected on XX images = %.4f Jy" % noise_XX)
     print("Noise expected on YY images = %.4f Jy" % noise_YY)
     print("Noise expected on Stokes I images = %.4f Jy (simple formula only !) , SEFD_I = %.4f Jy" % (noise_I,SEFD_I))
+    
+    
+    if n_phase_bins >= 1 :
+       print("Calculating noise in a folded profile for number of bins = %d" % (n_phase_bins))
+       # n_p = 2 # 2 polarisations 
+       inttime_per_bin = pulsar_observing_time / n_phase_bins
+       if incoherent :
+          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum)
+       else :
+          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1)
+       print("Expected noise in a folded profile = %.3f [mJy]" % (noise_folded_i*1000.00))
 
     return (aeff_XX, T_sys_XX, sens_XX, sefd_XX, noise_XX, beams['XX'], aeff_YY, T_sys_YY, sens_YY, sefd_YY, noise_YY, beams['YY'] )
 
@@ -230,7 +245,9 @@ def main():
     # different options of summation (default interferometry):
     # incoherent sum on N antennas :
     parser.add_option('--incoherent', '--ic', action="store_true", dest="incoherent", default=False, help="Sensitivity of incoherent sum [default %default]")
-    
+    # folding pulsars :
+    parser.add_option('--n_phase_bins', '--n_bins', dest='n_phase_bins', default=1, help='Number of phase bins when folding pulsar observations [default %default]', type=int)    
+    parser.add_option('--pulsar_observing_time', dest='pulsar_observing_time', default=-1, type=float, help='Total pulsar observing time in seconds [default %default sec]')
 
     # types :
     #   trcv_angelica_data_vs_time : Use T_rcv from lightcurve fits see RED curve in Ill.25 haslam_vs_angelica.odt for details
@@ -399,6 +416,9 @@ def main():
     print("use db     = %s" % (options.use_db))
     print("T_rcv type = %s" % (options.trcv_type))
     print("Incoherent sum = %s" % (options.incoherent))
+    print("N bins     = %d" % (options.n_phase_bins))
+    print("Pulsar observing time = %.3f [sec]" % (options.pulsar_observing_time))
+    print("Total observing time = %.2f [sec]" % (options.total_observing_time))
     print("########################################")
 
     #    if (datetimestring is None):
@@ -497,7 +517,7 @@ def main():
                                               antnum=options.antnum,
                                               inttime=options.inttime,
                                               bandwidth=options.bandwidth,
-                                              incoherent=options.incoherent )
+                                              incoherent=options.incoherent, n_phase_bins=options.n_phase_bins, pulsar_observing_time=options.pulsar_observing_time )
 
            out_line_XX = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_XX, T_sys_XX, aeff_XX, T_rcv, noise_XX)
            out_line_YY = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_YY, T_sys_YY, aeff_YY, T_rcv, noise_YY)
