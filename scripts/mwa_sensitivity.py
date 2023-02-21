@@ -143,8 +143,12 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
     sefd_XX = (2760.00 / sens_XX)  # 2k/(A/T)
     sefd_YY = (2760.00 / sens_YY)  # 2k/(A/T)
 
-    noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * (antnum - 1))
-    noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * (antnum - 1))
+    antnum_minus1 = (antnum - 1)
+    if antnum == 1 :
+       antnum_minus1 = 1
+
+    noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
+    noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
 
     print("%.2f Hz :" % (freq))
 
