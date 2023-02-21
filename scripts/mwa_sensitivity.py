@@ -91,21 +91,19 @@ def trcv_daniel_paper_2020( freq_mhz ) :
    
 
 
-def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, model, plottype, extension,
+def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, dirname, model, plottype, extension,
                           pointing_az_deg=0,
                           pointing_za_deg=0,
                           add_sources=False,
                           zenithnorm=True,
                           antnum=128,
                           inttime=120,
-                          bandwidth=1280000,
-                          incoherent=False,
-                          n_phase_bins=1,
-                          pulsar_observing_time=-1 ):
+                          bandwidth=1280000,                          
+                          incoherent=False ):
     freq_mhz = freq / 1e6
-    if pulsar_observing_time <= 0 :
-       pulsar_observing_time = inttime
-    print('pulsar_observing_time = %.2f [sec], frequency=%.2f -> delays=%s' % (pulsar_observing_time,freq, delays))
+    if options.pulsar_observing_time <= 0 :
+       options.pulsar_observing_time = inttime
+    print('pulsar_observing_time = %.2f [sec], frequency=%.2f -> delays=%s' % (options.pulsar_observing_time,freq, delays))
 
     # if trcv_type',default='trcv_from_skymodel_with_err
 #    if trcv_type != "value":
@@ -152,7 +150,7 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
     if antnum == 1 :
        antnum_minus1 = 1
 
-    if incoherent :
+    if options.incoherent :
        noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum )
        noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum )    
     else :
@@ -182,11 +180,11 @@ def calculate_sensitivity(freq, delays, gps, trcv_type, T_rcv, size, dirname, mo
     print("Noise expected on Stokes I images = %.4f Jy (simple formula only !) , SEFD_I = %.4f Jy" % (noise_I,SEFD_I))
     
     
-    if n_phase_bins >= 1 :
-       print("Calculating noise in a folded profile for number of bins = %d" % (n_phase_bins))
+    if options.n_phase_bins >= 1 :
+       print("Calculating noise in a folded profile for number of bins = %d" % (options.n_phase_bins))
        # n_p = 2 # 2 polarisations 
-       inttime_per_bin = pulsar_observing_time / n_phase_bins
-       if incoherent :
+       inttime_per_bin = options.pulsar_observing_time / options.n_phase_bins
+       if options.incoherent :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum)
        else :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1)
@@ -248,6 +246,9 @@ def main():
     # folding pulsars :
     parser.add_option('--n_phase_bins', '--n_bins', dest='n_phase_bins', default=1, help='Number of phase bins when folding pulsar observations [default %default]', type=int)    
     parser.add_option('--pulsar_observing_time', dest='pulsar_observing_time', default=-1, type=float, help='Total pulsar observing time in seconds [default %default sec]')
+    parser.add_option('--pulsar_mean_flux', '--psr_mean_flux', dest='pulsar_mean_flux', default=2.37, help='Pulsar mean flux density in Jy [default %default - for B0950+08]', type=float)
+    parser.add_option('--pulsar_period', '--psr_period', dest='pulsar_period', default=0.2530651649482, help='Pulsar period in seconds [default %default - for B0950+08]', type=float)
+    parser.add_option('--pulsar_pulse_width', '--psr_pulse_width', dest='pulsar_pulse_width', default=0.021, help='Pulsar pulse width in seconds [default %default - for B0950+08]', type=float)
 
     # types :
     #   trcv_angelica_data_vs_time : Use T_rcv from lightcurve fits see RED curve in Ill.25 haslam_vs_angelica.odt for details
@@ -506,7 +507,7 @@ def main():
            # (T_sys_XX,sens_XX,sefd_XX,noise_XX,T_sys_YY,sens_YY,sefd_YY,noise_YY)
            freq_mhz = freq / 1e6
            (aeff_XX, T_sys_XX, sens_XX, sefd_XX, noise_XX, beam_XX, aeff_YY, T_sys_YY, sens_YY, sefd_YY,
-            noise_YY, beam_YY) = calculate_sensitivity(freq, delays, gps, options.trcv_type, T_rcv, options.size, options.dir,
+            noise_YY, beam_YY) = calculate_sensitivity( options, freq, delays, gps, options.trcv_type, T_rcv, options.size, options.dir,
                                               model=model,
                                               plottype=plottype,
                                               extension=extension,
@@ -516,8 +517,7 @@ def main():
                                               zenithnorm=options.zenithnorm,
                                               antnum=options.antnum,
                                               inttime=options.inttime,
-                                              bandwidth=options.bandwidth,
-                                              incoherent=options.incoherent, n_phase_bins=options.n_phase_bins, pulsar_observing_time=options.pulsar_observing_time )
+                                              bandwidth=options.bandwidth )
 
            out_line_XX = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_XX, T_sys_XX, aeff_XX, T_rcv, noise_XX)
            out_line_YY = "%.8f %.8f %.2f %.8f %.8f %.8f\n" % (freq_mhz, sens_YY, T_sys_YY, aeff_YY, T_rcv, noise_YY)
