@@ -179,6 +179,13 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     print("Noise expected on YY images = %.4f Jy" % noise_YY)
     print("Noise expected on Stokes I images = %.4f Jy (simple formula only !) , SEFD_I = %.4f Jy" % (noise_I,SEFD_I))
     
+    if options.show_snr :
+       pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
+       snr = pulsar_peak_flux / noise_I
+       
+       print("Pulsar peak flux = %.3f [mJy] -> snr = %.2f (SNR OF SINGLE PULSES)" % (pulsar_peak_flux*1000.00,snr))
+       
+    
     
     if options.n_phase_bins >= 1 :
        print("Calculating noise in a folded profile for number of bins = %d" % (options.n_phase_bins))
@@ -189,6 +196,13 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        else :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1)
        print("Expected noise in a folded profile = %.3f [mJy]" % (noise_folded_i*1000.00))
+       
+       if options.show_snr :
+          pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
+          snr = pulsar_peak_flux / noise_folded_i
+
+          print("Pulsar peak flux = %.3f [mJy] -> snr = %.2f (SNR OF FOLDED PROFILE)" % (pulsar_peak_flux*1000.00,snr))
+
 
     return (aeff_XX, T_sys_XX, sens_XX, sefd_XX, noise_XX, beams['XX'], aeff_YY, T_sys_YY, sens_YY, sefd_YY, noise_YY, beams['YY'] )
 
@@ -249,6 +263,7 @@ def main():
     parser.add_option('--pulsar_mean_flux', '--psr_mean_flux', dest='pulsar_mean_flux', default=2.37, help='Pulsar mean flux density in Jy [default %default - for B0950+08]', type=float)
     parser.add_option('--pulsar_period', '--psr_period', dest='pulsar_period', default=0.2530651649482, help='Pulsar period in seconds [default %default - for B0950+08]', type=float)
     parser.add_option('--pulsar_pulse_width', '--psr_pulse_width', dest='pulsar_pulse_width', default=0.021, help='Pulsar pulse width in seconds [default %default - for B0950+08]', type=float)
+    parser.add_option('--snr', '--show_snr', action="store_true", dest="show_snr", default=False, help="Show pulsar SNR [default %default]")
 
     # types :
     #   trcv_angelica_data_vs_time : Use T_rcv from lightcurve fits see RED curve in Ill.25 haslam_vs_angelica.odt for details
