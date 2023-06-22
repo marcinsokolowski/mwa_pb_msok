@@ -196,10 +196,10 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
         
     for n_sigma in [5,10,20] :       
        if inttime >= FRB_width :    
-          print("INFO : calculating FRB sensitivity for integration time = %d [ms] wider than typical FRB width = %d [ms]" % (inttime,FRB_width))
+          print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] wider than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
           limit_ms_Nsigma = sens_jy*n_sigma*inttime*1000.00 # limit in Jy ms :
        else :
-          print("INFO : calculating FRB sensitivity for integration time = %d [ms] shorter than typical FRB width = %d [ms]" % (inttime,FRB_width))
+          print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] shorter than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
           limit_ms_Nsigma = sens_jy*n_sigma*FRB_width*1000.00 # limit in Jy ms :  
          
        print("FRB limit %d sigma is %.4f Jy ms" % (n_sigma,limit_ms_Nsigma))
