@@ -186,6 +186,12 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        print("Pulsar peak flux = %.3f [mJy] -> snr = %.2f (SNR OF SINGLE PULSES)" % (pulsar_peak_flux*1000.00,snr))
        
     
+    # as in /home/msok/github/station_beam/python/lfaa_sensitivity.py
+    sens_jy = SEFD_I / math.sqrt( bandwidth * inttime )
+    
+    for n_sigma in [5,10,20] :       
+       limit_ms_Nsigma = sens_jy*n_sigma*inttime*1000.00 # limit in Jy ms :
+       print("FRB limit %d sigma is %.4f Jy ms" % (n_sigma,limit_ms_Nsigma))
     
     if options.n_phase_bins >= 1 :
        print("Calculating noise in a folded profile for number of bins = %d" % (options.n_phase_bins))
