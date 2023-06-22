@@ -187,15 +187,19 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        
     
     # as in /home/msok/github/station_beam/python/lfaa_sensitivity.py
-    sens_jy = SEFD_I / math.sqrt( bandwidth * inttime )
+    # sens_jy = SEFD_I / math.sqrt( bandwidth * inttime )
+    sens_jy = noise_I # have to use noise_I which is calculated for incoherent sum 
     
     # FRB width = 10ms :
     FRB_width=0.010 # second (10ms)
     
+        
     for n_sigma in [5,10,20] :       
-       if inttime >= width :    
+       if inttime >= FRB_width :    
+          print("INFO : calculating FRB sensitivity for integration time = %d [ms] wider than typical FRB width = %d [ms]" % (inttime,FRB_width))
           limit_ms_Nsigma = sens_jy*n_sigma*inttime*1000.00 # limit in Jy ms :
        else :
+          print("INFO : calculating FRB sensitivity for integration time = %d [ms] shorter than typical FRB width = %d [ms]" % (inttime,FRB_width))
           limit_ms_Nsigma = sens_jy*n_sigma*FRB_width*1000.00 # limit in Jy ms :  
          
        print("FRB limit %d sigma is %.4f Jy ms" % (n_sigma,limit_ms_Nsigma))
