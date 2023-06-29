@@ -150,9 +150,11 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     if antnum == 1 :
        antnum_minus1 = 1
 
+    object="images"
     if options.incoherent :
        noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum )
        noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum )    
+       object="incoherent beam"
     else :
        noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
        noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
@@ -175,9 +177,9 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     noise_I = 0.5*math.sqrt( noise_XX*noise_XX + noise_YY*noise_YY )
     SEFD_I  = 0.5*math.sqrt( sefd_XX*sefd_XX + sefd_YY*sefd_YY )
 
-    print("Noise expected on XX images = %.4f Jy" % noise_XX)
-    print("Noise expected on YY images = %.4f Jy" % noise_YY)
-    print("Noise expected on Stokes I images = %.4f Jy (simple formula only !) , SEFD_I = %.4f Jy" % (noise_I,SEFD_I))
+    print("Noise expected in XX %s = %.4f Jy" % (object,noise_XX))
+    print("Noise expected in YY %s = %.4f Jy" % (object,noise_YY))
+    print("Noise expected in Stokes I %s = %.4f Jy (simple formula only !) , SEFD_I = %.4f Jy" % (object,noise_I,SEFD_I))
     
     if options.show_snr :
        pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
@@ -193,13 +195,16 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     # FRB width = 10ms :
     FRB_width=0.010 # second (10ms)
     
+    if inttime >= FRB_width :    
+        print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] wider than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
+    else :
+        print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] shorter than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
+
         
     for n_sigma in [5,10,20] :       
        if inttime >= FRB_width :    
-          print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] wider than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
           limit_ms_Nsigma = sens_jy*n_sigma*inttime*1000.00 # limit in Jy ms :
        else :
-          print("INFO : calculating FRB sensitivity for integration time = %.2f [ms] shorter than typical FRB width = %.2f [ms]" % (inttime*1000,FRB_width*1000))
           limit_ms_Nsigma = sens_jy*n_sigma*FRB_width*1000.00 # limit in Jy ms :  
          
        print("FRB limit %d sigma is %.4f Jy ms" % (n_sigma,limit_ms_Nsigma))
@@ -216,6 +221,8 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        
        if options.show_snr :
           pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
+          if options.pulsar_peak_flux > 0 :
+              pulsar_peak_flux = options.pulsar_peak_flux
           snr = pulsar_peak_flux / noise_folded_i
 
           print("Pulsar peak flux = %.3f [mJy] -> snr = %.2f (SNR OF FOLDED PROFILE)" % (pulsar_peak_flux*1000.00,snr))
@@ -278,6 +285,7 @@ def main():
     parser.add_option('--n_phase_bins', '--n_bins', dest='n_phase_bins', default=1, help='Number of phase bins when folding pulsar observations [default %default]', type=int)    
     parser.add_option('--pulsar_observing_time', dest='pulsar_observing_time', default=-1, type=float, help='Total pulsar observing time in seconds [default %default sec]')
     parser.add_option('--pulsar_mean_flux', '--psr_mean_flux', dest='pulsar_mean_flux', default=2.37, help='Pulsar mean flux density in Jy [default %default - for B0950+08]', type=float)
+    parser.add_option('--pulsar_peak_flux', '--psr_peak_flux', dest='pulsar_peak_flux', default=-1000, help='Pulsar peak flux density in Jy [default %default - negative means not specified]', type=float)
     parser.add_option('--pulsar_period', '--psr_period', dest='pulsar_period', default=0.2530651649482, help='Pulsar period in seconds [default %default - for B0950+08]', type=float)
     parser.add_option('--pulsar_pulse_width', '--psr_pulse_width', dest='pulsar_pulse_width', default=0.021, help='Pulsar pulse width in seconds [default %default - for B0950+08]', type=float)
     parser.add_option('--snr', '--show_snr', action="store_true", dest="show_snr", default=False, help="Show pulsar SNR [default %default]")
@@ -451,6 +459,7 @@ def main():
     print("Incoherent sum = %s" % (options.incoherent))
     print("N bins     = %d" % (options.n_phase_bins))
     print("Pulsar observing time = %.3f [sec]" % (options.pulsar_observing_time))
+    print("Pulsar peak flux = %.6f [Jy]" % (options.pulsar_peak_flux))
     print("Total observing time = %.2f [sec]" % (options.total_observing_time))
     print("########################################")
 
