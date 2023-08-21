@@ -183,6 +183,9 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     
     if options.show_snr :
        pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
+       if options.pulsar_peak_flux > 0 :
+           pulsar_peak_flux = options.pulsar_peak_flux
+           
        snr = pulsar_peak_flux / noise_I
        
        print("Pulsar peak flux = %.3f [mJy] -> snr = %.2f (SNR OF SINGLE PULSES)" % (pulsar_peak_flux*1000.00,snr))
@@ -217,7 +220,15 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum)
        else :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1)
-       print("Expected noise in a folded profile = %.3f [mJy]" % (noise_folded_i*1000.00))
+       print("Expected noise in a folded profile (per phase bin) = %.3f [mJy] = %.6f [Jy]" % ((noise_folded_i*1000.00),noise_folded_i))
+       
+       noise_folded_total_obstime_i = 0.00
+       if options.incoherent :
+          noise_folded_total_obstime_i = SEFD_I/math.sqrt(bandwidth*options.pulsar_observing_time*antnum)
+       else :
+          noise_folded_total_obstime_i = SEFD_I/math.sqrt(bandwidth*options.pulsar_observing_time*antnum * antnum_minus1)
+       print("Expected noise in full %.2f [sec] observation integrated =  %.3f [mJy] = %.6f [Jy]" % (options.pulsar_observing_time,(noise_folded_total_obstime_i*1000.00),noise_folded_total_obstime_i))
+
        
        if options.show_snr :
           pulsar_peak_flux = options.pulsar_mean_flux * (options.pulsar_period / options.pulsar_pulse_width)
@@ -493,6 +504,15 @@ def main():
             gridpoint = options.gridpoint
             delays_xy = mwa_sweet_spots.get_delays(gridpoint)
             delays = delays_xy[0]
+            
+            if options.pointing_za_deg is None and options.pointing_az_deg is None :
+               options.pointing_za_deg = mwa_sweet_spots.all_grid_points[gridpoint][3]
+               options.pointing_elev_deg = mwa_sweet_spots.all_grid_points[gridpoint][2]
+               options.pointing_az_deg = mwa_sweet_spots.all_grid_points[gridpoint][1]
+               
+               print("WARNING : parameters --pointing_za_deg and --pointing_az_deg not specified -> using center of the beam at (az,za,elev) = (%.6f,%.6f,%.6f) [deg]" % (options.pointing_az_deg,options.pointing_za_deg,options.pointing_elev_deg))
+               
+            
         print("Using of MWA database is not required")
 
     print("Pointing information for obsid=%d" % (int(options.gps)))
@@ -539,8 +559,9 @@ def main():
     noise_i_weighted = 0
     beam_i_sum = 0
 
+    gps_start = int(options.gps)
     gps= int( options.gps )
-    while gps < ( int(options.gps) + options.total_observing_time) :
+    while gps < ( gps_start + options.total_observing_time) :
        print("DEBUG : calculating sensitivity at GPS TIME = %d" % (gps))
     
        for freq in frequency:
@@ -577,6 +598,7 @@ def main():
            noise_count   += 1
            
        gps += options.inttime
+       print("DEBUG : gps = %d (added %.2f sec)" % (gps,options.inttime))
 
     f_out_XX.close()
     f_out_YY.close()
