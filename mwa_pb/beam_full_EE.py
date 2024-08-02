@@ -636,8 +636,9 @@ class Beam(object):
 #       multiple by XY phase :
         xy_phase_rad = config.xy_phase_deg*(math.pi/180.00)
         xy_phase = math.cos(xy_phase_rad) + 1j*math.sin(xy_phase_rad)
+        # modify Jones in X polarisation (i.e. first index 0) only:
         Jones[0, 0] = Jones[0, 0]*xy_phase
-        Jones[1, 0] = Jones[1, 0]*xy_phase
+        Jones[0, 1] = Jones[0, 1]*xy_phase
         print("DEBUG : xy_phase = %.6f [rad], xy_phase = %s" % (xy_phase_rad,xy_phase))
 
         return Jones
