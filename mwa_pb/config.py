@@ -42,3 +42,11 @@ HIP_CONSTELLATION_FILE = os.path.join(datadir, 'HIP_constellations.dat')
 RADIO_IMAGE_FILE = os.path.join(datadir, 'radio408.RaDec.fits')
 
 MWAPOS = EarthLocation.from_geodetic(lon="116:40:14.93", lat="-26:42:11.95", height=377.8)
+
+# XY phase in degrees:
+xy_phase_deg=0.00
+
+
+def set_xyphase( xy_phase_deg_param ) :
+   global xy_phase_deg 
+   xy_phase_deg= xy_phase_deg_param

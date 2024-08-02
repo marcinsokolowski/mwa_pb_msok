@@ -633,6 +633,13 @@ class Beam(object):
             Jones[pol, 1] = -Sigma_P  # 2017-05-30 : sign fixed by MS to reflect the fact that phi=90-az (it is not just change of values but orientation of base vector changes,
             # hence the sign of the Phi component of electric field has to change too. It was also fixed
 
+#       multiple by XY phase :
+        xy_phase_rad = config.xy_phase_deg*(math.pi/180.00)
+        xy_phase = math.cos(xy_phase_rad) + 1j*math.sin(xy_phase_rad)
+        Jones[0, 0] = Jones[0, 0]*xy_phase
+        Jones[1, 0] = Jones[1, 0]*xy_phase
+        print("DEBUG : xy_phase = %.6f [rad], xy_phase = %s" % (xy_phase_rad,xy_phase))
+
         return Jones
 
 

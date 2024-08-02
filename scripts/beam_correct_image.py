@@ -528,8 +528,14 @@ def parse_options():
                       default=False,
                       help="If normalise to zenith [default %]")                      
 
-    (options, args) = parser.parse_args()
+    parser.add_option('--xy_phase_deg','--xy_phase',
+                      dest="xy_phase_deg",
+                      default=0.00,
+                      help="XY phase in degrees [default %]",type="float")  
 
+
+    (options, args) = parser.parse_args()
+    
     return (options, args)
 
 
@@ -537,6 +543,7 @@ if __name__ == "__main__":
     my_dir = ''  # Should work ok when run from directory where files are.
 
     (options, args) = parse_options()
+    config.set_xyphase( options.xy_phase_deg )
 
     logger.setLevel(logging.DEBUG)
     # Pick image & gridpoint
