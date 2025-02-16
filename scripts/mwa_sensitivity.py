@@ -7,6 +7,10 @@ Example usage:
 python ./mwa_sensitivity.py -b 18,13,8,3,17,12,7,2,16,11,6,1,15,10,5,0 -c 169 -p all -g 0  -m full_EE
 python ./mwa_sensitivity.py -c 169 -p all -g 0  -m full_EE
 
+Using METAFITS :
+ getmeta! OBSID 
+ python ./mwa_sensitivity.py --metafits OBSID.metafits -p all -m full_EE --gps OBSID -c 121 --bandwidth 30720000 --inttime 120
+
 Starting version by Marcin Sokolowski
 
 main task is:
