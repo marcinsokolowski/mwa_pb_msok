@@ -178,6 +178,7 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     print(lstring % params)
     
     # WARNING : should be more complicated than this (TO-BE-UPDATED) :
+    # WARNING : 0.5 factor for the convention-I in Smirnov 2011, where I = ( XX + YY )/2 !
     noise_I = 0.5*math.sqrt( noise_XX*noise_XX + noise_YY*noise_YY )
     SEFD_I  = 0.5*math.sqrt( sefd_XX*sefd_XX + sefd_YY*sefd_YY )
 
@@ -223,14 +224,14 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        if options.incoherent :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum)
        else :
-          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1)
+          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1 * 0.5) # missing factor of 1/2 added from number of baselines, see Tools of Radio Astronomy page 228
        print("Expected noise in a folded profile (per phase bin) = %.3f [mJy] = %.6f [Jy]" % ((noise_folded_i*1000.00),noise_folded_i))
        
        noise_folded_total_obstime_i = 0.00
        if options.incoherent :
           noise_folded_total_obstime_i = SEFD_I/math.sqrt(bandwidth*options.pulsar_observing_time*antnum)
        else :
-          noise_folded_total_obstime_i = SEFD_I/math.sqrt(bandwidth*options.pulsar_observing_time*antnum * antnum_minus1)
+          noise_folded_total_obstime_i = SEFD_I/math.sqrt(bandwidth*options.pulsar_observing_time*antnum * antnum_minus1 * 0.5 ) # missing factor of 1/2 added from number of baselines, see Tools of Radio Astronomy page 228
        print("Expected noise in full %.2f [sec] observation integrated =  %.3f [mJy] = %.6f [Jy]" % (options.pulsar_observing_time,(noise_folded_total_obstime_i*1000.00),noise_folded_total_obstime_i))
 
        
