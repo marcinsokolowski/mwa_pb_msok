@@ -4,6 +4,7 @@ $Author: dkaplan $:  Author of last commit
 $Date: 2011-10-31 11:30:40 -0500 (Mon, 31 Oct 2011) $:    Date of last commit
 
 """
+from __future__ import absolute_import
 
 import logging
 import math
@@ -14,10 +15,10 @@ import astropy
 from astropy.time import Time
 from astropy.coordinates import SkyCoord
 
-import beam_full_EE
-import config
-import metadata
-import mwa_tile
+from . import beam_full_EE
+from . import config
+from . import metadata
+from . import mwa_tile
 
 logging.basicConfig(format='# %(levelname)s:%(name)s: %(message)s')
 logger = logging.getLogger(__name__)  # default logger level is WARNING

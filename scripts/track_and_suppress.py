@@ -9,6 +9,7 @@ Starting version by Marcin Sokolowski
 This is the script interface to the functions and modules defined in MandC_Core/pb/primarybeamap.py
 
 """
+from __future__ import print_function
 
 import getpass
 import logging

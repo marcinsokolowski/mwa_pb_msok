@@ -3,6 +3,7 @@
 """Tools for calculating the complex voltage response of MWA tiles and dipoles
 Randall Wayth. March 2014, based on the work of Adrian Sutinjo.
 """
+from __future__ import absolute_import
 
 import copy
 import logging
@@ -13,8 +14,8 @@ import astropy.io.fits as pyfits
 
 from scipy import interpolate
 
-import config
-import mwa_impedance
+from . import config
+from . import mwa_impedance
 
 vel_light = 2.99792e8
 DQ = 435e-12 * vel_light  # delay quantum in distance light travels for 1 quantum

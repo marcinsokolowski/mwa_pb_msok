@@ -1,5 +1,6 @@
 """Library to access the MWA metadata web services
 """
+from __future__ import print_function
 
 import json
 

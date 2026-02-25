@@ -3,6 +3,7 @@
 """
 Produce a sky map showing the beam shape for a given observation.
 """
+from __future__ import print_function
 
 from optparse import OptionParser
 import sys

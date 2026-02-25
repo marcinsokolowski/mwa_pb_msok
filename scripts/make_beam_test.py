@@ -12,6 +12,7 @@
     # INFO:make_beam: YY beam written to P00_w_beamYY.fits
 
 """
+from __future__ import print_function
 # import pdb
 
 import logging

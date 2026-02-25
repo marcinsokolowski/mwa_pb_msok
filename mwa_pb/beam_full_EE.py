@@ -30,6 +30,8 @@ Calculating Far-Field Radiation Based on FEKO
  Spherical Wave Coefficients, draft 10 June 2015
  
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
 import datetime  # For info-level logging
 import numpy as np
@@ -47,8 +49,8 @@ from scipy.special import lpmv  # associated Legendre function
 from astropy.io import fits
 from scipy.interpolate import RegularGridInterpolator
 
-import config
-import beam_tools
+from . import config
+from . import beam_tools
 
 logging.basicConfig(format='# %(levelname)s:%(name)s: %(message)s')
 logger = logging.getLogger(__name__)  # default logger level is WARNING

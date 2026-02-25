@@ -19,6 +19,7 @@ make_primarybeammap()
 This is the script interface to the functions and modules defined in MWA_Tools/src/primarybeamap.py
 
 """
+from __future__ import print_function
 
 import errno
 import math

@@ -4,6 +4,7 @@
   main task is:
   make_primarybeammap()
 """
+from __future__ import print_function
 
 import logging
 import math
@@ -136,7 +137,7 @@ def map_sky(skymap, RA, dec, gps, az_grid, za_grid):
     """
     # Get az, ZA grid transformed to equatorial coords
     grid2eq = horz2eq(az_grid, za_grid, gps)
-    print('grid2eq', grid2eq['RA'].shape)
+    print(('grid2eq', grid2eq['RA'].shape))
 
     # Set up interp function using sky map
     # flip so interpolation has increasing values
@@ -147,14 +148,14 @@ def map_sky(skymap, RA, dec, gps, az_grid, za_grid):
     # https://github.com/scipy/scipy/issues/3703
 
     # interpolate map onto az,ZA grid
-    print(numpy.min(grid2eq['dec']), numpy.max(grid2eq['dec']))
-    print(numpy.min(grid2eq['RA']), numpy.max(grid2eq['RA']))
+    print((numpy.min(grid2eq['dec']), numpy.max(grid2eq['dec'])))
+    print((numpy.min(grid2eq['RA']), numpy.max(grid2eq['RA'])))
     # Convert to RA=-180 - 180 format (same as Haslam)
     # We do it this way so RA values are always increasing for RegularGridInterpolator
     grid2eq['RA'][grid2eq['RA'] > 180] = grid2eq['RA'][grid2eq['RA'] > 180] - 360
 
-    print(numpy.min(grid2eq['dec']), numpy.max(grid2eq['dec']))
-    print(numpy.min(grid2eq['RA']), numpy.max(grid2eq['RA']))
+    print((numpy.min(grid2eq['dec']), numpy.max(grid2eq['dec'])))
+    print((numpy.min(grid2eq['RA']), numpy.max(grid2eq['RA'])))
     my_map = my_interp_fn(numpy.dstack([grid2eq['dec'], grid2eq['RA']]))
     #    print "np.vstack([grid2eq['dec'], grid2eq['RA']])",np.vstack([grid2eq['dec'], grid2eq['RA']]).shape
     #    print "np.hstack([grid2eq['dec'], grid2eq['RA']])",np.hstack([grid2eq['dec'], grid2eq['RA']]).shape
@@ -301,13 +302,13 @@ def make_primarybeammap(gps, delays, frequency, model, extension='png',
         beam = beams[pol]
         beamsky = beam * sky_grid
         beam_dOMEGA = beam * dOMEGA
-        print('sum(beam)', numpy.nansum(beam))
-        print('sum(beamsky)', numpy.nansum(beamsky))
+        print(('sum(beam)', numpy.nansum(beam)))
+        print(('sum(beamsky)', numpy.nansum(beamsky)))
         beamsky_sum = numpy.nansum(beamsky)
         beam_sum = numpy.nansum(beam)
         beam_dOMEGA_sum = numpy.nansum(beam_dOMEGA)
         Tant = numpy.nansum(beamsky) / numpy.nansum(beam)
-        print('Tant=sum(beamsky)/sum(beam)=', Tant)
+        print(('Tant=sum(beamsky)/sum(beam)=', Tant))
 
         if pol == 'XX':
             beamsky_sum_XX = beamsky_sum

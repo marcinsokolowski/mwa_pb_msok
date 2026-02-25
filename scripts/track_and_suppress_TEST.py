@@ -9,6 +9,7 @@ Starting version by Marcin Sokolowski
 This is the script interface to the functions and modules defined in MandC_Core/pb/primarybeamap.py
 
 """
+from __future__ import print_function
 
 import getpass
 import logging
@@ -142,12 +143,12 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    print "######################################################"
-    print "PARAMETERS:"
-    print "######################################################"
-    print "min_gain = %.4f" % (options.min_gain)
-    print "min_elevation = %.2f [deg]" % (options.min_elevation)
-    print "######################################################"
+    print("######################################################")
+    print("PARAMETERS:")
+    print("######################################################")
+    print("min_gain = %.4f" % (options.min_gain))
+    print("min_elevation = %.2f [deg]" % (options.min_elevation))
+    print("######################################################")
 
     model = options.model
     if model not in ['analytic', 'advanced', 'full_EE', 'full_EE_AAVS05']:
@@ -171,7 +172,7 @@ if __name__ == '__main__':
 
     step = 8 * int((options.step + 7) / 8)  # Always round up to the next modulo 8 second, not down
 
-    print "TEST ux = %.2f , gps = %.2f" % (options.ux_start,start_time.gps)
+    print("TEST ux = %.2f , gps = %.2f" % (options.ux_start,start_time.gps))
 
     if (options.avoid_source_dec_deg is None) or (options.avoid_source_dec_deg is None):
         tracklist = get_best_gridpoints_supress_sun(gps_start=start_time.gps + 16,  # Add 16 to allow for mode change
@@ -261,4 +262,4 @@ if __name__ == '__main__':
                                  'az': az,
                                  'project': options.project})
 
-    print "Script saved to file %s" % (outfile_name)
+    print("Script saved to file %s" % (outfile_name))

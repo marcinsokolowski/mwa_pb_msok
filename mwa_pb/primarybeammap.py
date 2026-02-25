@@ -5,6 +5,7 @@ main task is:
 make_primarybeammap()
 
 """
+from __future__ import print_function
 
 import logging
 import math
@@ -398,7 +399,7 @@ def make_primarybeammap(datetimestring, delays, frequency,
         if (RAmoon < -180 + RA0):
             RAmoon += 360
         ax1.plot(RAmoon / 15.0, Decmoon, 'ko', markersize=10)
-        print(RAmoon, Decmoon)
+        print((RAmoon, Decmoon))
 
     if jupiter:
         RAjupiter, Decjupiter, Azjupiter, Altjupiter = jupiterposition(s_obstime)
@@ -407,7 +408,7 @@ def make_primarybeammap(datetimestring, delays, frequency,
         if (RAjupiter < -180 + RA0):
             RAjupiter += 360
         ax1.plot(RAjupiter / 15.0, Decjupiter, 'bo', markersize=8)
-        print(RAjupiter, Decjupiter)
+        print((RAjupiter, Decjupiter))
 
     if len(ra_sat) > 0:
         coords = SkyCoord(ra=ra_sat, dec=dec_sat, equinox='J2000', unit=(astropy.units.deg, astropy.units.deg))

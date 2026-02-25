@@ -2,6 +2,7 @@
 
 """Tim's attempt to correct for Stokes leakage on images generated without 
 beam correction durign calibration"""
+from __future__ import print_function
 
 # DEBUG :
 # import pdb

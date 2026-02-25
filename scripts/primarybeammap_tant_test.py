@@ -11,6 +11,7 @@
 
   This is the script interface to the functions and modules defined in MWA_Tools/src/primarybeamap.py
 """
+from __future__ import print_function
 
 import errno
 import os
@@ -157,7 +158,7 @@ def main():
     frequency = numpy.array(frequency) * 1e6  # Convert to Hz
 
     for freq in frequency:
-        print('frequency', freq)
+        print(('frequency', freq))
         result = make_primarybeammap(gps, delays, freq,
                                      model=model,
                                      plottype=plottype,
