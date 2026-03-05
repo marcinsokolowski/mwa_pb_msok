@@ -160,8 +160,8 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum )    
        object="incoherent beam"
     else :
-       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
-       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
+       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1 * 0.5)
+       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1 * 0.5)
 
     print("%.2f Hz :" % (freq))
 
