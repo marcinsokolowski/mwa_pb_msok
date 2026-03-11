@@ -138,7 +138,7 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
     gain_YY = beams['YY'] / (beam_dOMEGA_sum_YY / (4.00 * math.pi))
 
     ant_efficiency = 1.00
-    aeff_XX = (7161.97 / (freq_mhz * freq_mhz)) * (gain_XX * ant_efficiency)
+    aeff_XX = (7161.97 / (freq_mhz * freq_mhz)) * (gain_XX * ant_efficiency) # gain/lambda^2 equation 
     aeff_YY = (7161.97 / (freq_mhz * freq_mhz)) * (gain_YY * ant_efficiency)
 
     T_sys_XX = (Tant_XX + T_rcv)
@@ -160,8 +160,8 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum )    
        object="incoherent beam"
     else :
-       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
-       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1)
+       noise_XX = sefd_XX / math.sqrt(bandwidth * inttime * antnum * antnum_minus1) # never ever add *0.5 under the square root -> see TMS, Tools of Radio Astronomy and discussions with Clancy
+       noise_YY = sefd_YY / math.sqrt(bandwidth * inttime * antnum * antnum_minus1) # never ever add *0.5 under the square root -> see TMS, Tools of Radio Astronomy and discussions with Clancy
 
     print("%.2f Hz :" % (freq))
 
@@ -224,7 +224,7 @@ def calculate_sensitivity(options, freq, delays, gps, trcv_type, T_rcv, size, di
        if options.incoherent :
           noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum)
        else :
-          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1 * 0.5) # missing factor of 1/2 added from number of baselines, see Tools of Radio Astronomy page 228
+          noise_folded_i = SEFD_I/math.sqrt(bandwidth*inttime_per_bin*antnum * antnum_minus1) # never ever add *0.5 under the square root -> see TMS, Tools of Radio Astronomy and discussions with Clancy James
        print("Expected noise in a folded profile (per phase bin) = %.3f [mJy] = %.6f [Jy]" % ((noise_folded_i*1000.00),noise_folded_i))
        
        noise_folded_total_obstime_i = 0.00
